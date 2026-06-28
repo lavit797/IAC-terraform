@@ -1,0 +1,27 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# Variable files
+terraform.tfvars
+*.tfvars
+
+# Plan files
+*.tfplan
+
+# AWS
+.aws/
+
+# Zip files
+*.zip
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+
+# OS files
+.DS_Store
