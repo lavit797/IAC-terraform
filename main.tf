@@ -1,3 +1,5 @@
+# CREATED AN EC2 INSTANCE AND ATTACHED A SNAPSHOT WITH IT
+
 # data "aws_ami" "ubuntu-aws" {
 #   most_recent = true
 #   owners = ["099720109477"]
@@ -70,438 +72,440 @@
 #   }
 # }
 
-resource "aws_vpc" "main" {
-    cidr_block = var.vpc_cidr
-    enable_dns_support = true
-    enable_dns_hostnames = true
-    tags = {
-      Name="production vpc"
-    }
-  }
+# PRODUCTION LEVEL VPC ARCHITECTURE
 
-  resource "aws_internet_gateway" "igw" {
+# resource "aws_vpc" "main" {
+#     cidr_block = var.vpc_cidr
+#     enable_dns_support = true
+#     enable_dns_hostnames = true
+#     tags = {
+#       Name="production vpc"
+#     }
+#   }
 
-    vpc_id = aws_vpc.main.id
+#   resource "aws_internet_gateway" "igw" {
 
-    tags ={
-        Name="production-IGW"
-    }
+#     vpc_id = aws_vpc.main.id
+
+#     tags ={
+#         Name="production-IGW"
+#     }
     
-  }
+#   }
 
-  data "aws_availability_zones" "available" {
-    state="available"
-  }
+#   data "aws_availability_zones" "available" {
+#     state="available"
+#   }
 
-  resource "aws_subnet" "public_subnet_1" {
-    vpc_id = aws_vpc.main.id
-    cidr_block = var.public_subnet_1
-    availability_zone = data.aws_availability_zones.available.names[0]
-    map_public_ip_on_launch = true
-    tags = {
-        Name="public_subnet_1"
-    }
-  }
+#   resource "aws_subnet" "public_subnet_1" {
+#     vpc_id = aws_vpc.main.id
+#     cidr_block = var.public_subnet_1
+#     availability_zone = data.aws_availability_zones.available.names[0]
+#     map_public_ip_on_launch = true
+#     tags = {
+#         Name="public_subnet_1"
+#     }
+#   }
 
-  resource "aws_subnet" "public_subnet_2" {
-    vpc_id = aws_vpc.main.id
-    cidr_block = var.public_subnet_2
-    availability_zone = data.aws_availability_zones.available.names[1]
-    map_public_ip_on_launch = true
-    tags = {
-        Name="public_subnet_2"
-    }
-  }
+#   resource "aws_subnet" "public_subnet_2" {
+#     vpc_id = aws_vpc.main.id
+#     cidr_block = var.public_subnet_2
+#     availability_zone = data.aws_availability_zones.available.names[1]
+#     map_public_ip_on_launch = true
+#     tags = {
+#         Name="public_subnet_2"
+#     }
+#   }
 
-  resource "aws_subnet" "private_subnet_1" {
-    vpc_id = aws_vpc.main.id
-    cidr_block = var.private_subnet_1
-    availability_zone = data.aws_availability_zones.available.names[0]
-    map_public_ip_on_launch = false
-    tags = {
-        Name="private_subnet_1"
-    }
-  }
+#   resource "aws_subnet" "private_subnet_1" {
+#     vpc_id = aws_vpc.main.id
+#     cidr_block = var.private_subnet_1
+#     availability_zone = data.aws_availability_zones.available.names[0]
+#     map_public_ip_on_launch = false
+#     tags = {
+#         Name="private_subnet_1"
+#     }
+#   }
 
-   resource "aws_subnet" "private_subnet_2" {
-    vpc_id = aws_vpc.main.id
-    cidr_block = var.private_subnet_2
-    availability_zone = data.aws_availability_zones.available.names[1]
-    map_public_ip_on_launch = false
-    tags = {
-        Name="private_subnet_2"
-    }
-  }
+#    resource "aws_subnet" "private_subnet_2" {
+#     vpc_id = aws_vpc.main.id
+#     cidr_block = var.private_subnet_2
+#     availability_zone = data.aws_availability_zones.available.names[1]
+#     map_public_ip_on_launch = false
+#     tags = {
+#         Name="private_subnet_2"
+#     }
+#   }
 
-  resource "aws_eip" "nat_eip" {
-    domain = "vpc"
-    tags ={
-      Name="production-NAT-EIP"
-    }
-  }
+#   resource "aws_eip" "nat_eip" {
+#     domain = "vpc"
+#     tags ={
+#       Name="production-NAT-EIP"
+#     }
+#   }
 
- resource "aws_nat_gateway" "nat" {
-   allocation_id = aws_eip.nat_eip.id
-   subnet_id = aws_subnet.public_subnet_1.id
+#  resource "aws_nat_gateway" "nat" {
+#    allocation_id = aws_eip.nat_eip.id
+#    subnet_id = aws_subnet.public_subnet_1.id
 
-   depends_on = [ 
-    aws_internet_gateway.igw
-    ]
+#    depends_on = [ 
+#     aws_internet_gateway.igw
+#     ]
 
-    tags = {
-      Name="production NAT"
-    }
- }
+#     tags = {
+#       Name="production NAT"
+#     }
+#  }
 
- resource "aws_route_table" "public_rt" {
+#  resource "aws_route_table" "public_rt" {
    
-vpc_id = aws_vpc.main.id
-route  {
-  cidr_block="0.0.0.0/0"
-  gateway_id = aws_internet_gateway.igw.id
-}
-tags = {
-  Name = "public-route-table"
-}
+# vpc_id = aws_vpc.main.id
+# route  {
+#   cidr_block="0.0.0.0/0"
+#   gateway_id = aws_internet_gateway.igw.id
+# }
+# tags = {
+#   Name = "public-route-table"
+# }
 
- }
+#  }
 
-resource "aws_route_table" "private_rt" {
+# resource "aws_route_table" "private_rt" {
 
-  vpc_id = aws_vpc.main.id
-  route  {
-cidr_block = "0.0.0.0/0"
-nat_gateway_id= aws_nat_gateway.nat.id
- }
+#   vpc_id = aws_vpc.main.id
+#   route  {
+# cidr_block = "0.0.0.0/0"
+# nat_gateway_id= aws_nat_gateway.nat.id
+#  }
 
-  tags = {
+#   tags = {
 
-    Name = "Private-Route-Table"
+#     Name = "Private-Route-Table"
 
-  }
+#   }
   
-}
+# }
 
-resource "aws_route_table_association" "public_subnet_1" {
- subnet_id = aws_subnet.public_subnet_1.id
- route_table_id = aws_route_table.public_rt.id
-}
+# resource "aws_route_table_association" "public_subnet_1" {
+#  subnet_id = aws_subnet.public_subnet_1.id
+#  route_table_id = aws_route_table.public_rt.id
+# }
 
-resource "aws_route_table_association" "public_subnet_2" {
+# resource "aws_route_table_association" "public_subnet_2" {
   
-subnet_id = aws_subnet.public_subnet_2.id
-route_table_id = aws_route_table.public_rt.id
-}
+# subnet_id = aws_subnet.public_subnet_2.id
+# route_table_id = aws_route_table.public_rt.id
+# }
 
-resource "aws_route_table_association" "private_subnet_1" {
-  subnet_id = aws_subnet.private_subnet_1.id
-  route_table_id = aws_route_table.private_rt.id
-}
+# resource "aws_route_table_association" "private_subnet_1" {
+#   subnet_id = aws_subnet.private_subnet_1.id
+#   route_table_id = aws_route_table.private_rt.id
+# }
 
-resource "aws_route_table_association" "private_subnet_2" {
-  subnet_id = aws_subnet.private_subnet_2.id
-  route_table_id = aws_route_table.private_rt.id
-}
+# resource "aws_route_table_association" "private_subnet_2" {
+#   subnet_id = aws_subnet.private_subnet_2.id
+#   route_table_id = aws_route_table.private_rt.id
+# }
 
-resource "aws_security_group" "bastion_sg" {
-name = "bastion-sg"
-description = "Bastion Security Group"
-  vpc_id = aws_vpc.main.id
+# resource "aws_security_group" "bastion_sg" {
+# name = "bastion-sg"
+# description = "Bastion Security Group"
+#   vpc_id = aws_vpc.main.id
 
-  ingress {
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
-    cidr_blocks = ["157.119.82.214/32"]
-  }
+#   ingress {
+#     from_port = 22
+#     to_port = 22
+#     protocol = "tcp"
+#     cidr_blocks = ["157.119.82.214/32"]
+#   }
 
-  egress {
+#   egress {
 
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#     from_port = 0
+#     to_port = 0
+#     protocol = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-  tags = {
-    Name= "bastion-SG"
-  }
-}
+#   tags = {
+#     Name= "bastion-SG"
+#   }
+# }
 
-resource "aws_security_group" "alb_sg" {
+# resource "aws_security_group" "alb_sg" {
 
-  name = "alb-sg"
+#   name = "alb-sg"
 
-  vpc_id = aws_vpc.main.id
+#   vpc_id = aws_vpc.main.id
 
-  ingress {
+#   ingress {
 
-    from_port = 80
+#     from_port = 80
 
-    to_port = 80
+#     to_port = 80
 
-    protocol = "tcp"
+#     protocol = "tcp"
 
-    cidr_blocks = ["0.0.0.0/0"]
+#     cidr_blocks = ["0.0.0.0/0"]
 
-  }
+#   }
 
-  ingress {
+#   ingress {
 
-    from_port = 443
+#     from_port = 443
 
-    to_port = 443
+#     to_port = 443
 
-    protocol = "tcp"
+#     protocol = "tcp"
 
-    cidr_blocks = ["0.0.0.0/0"]
+#     cidr_blocks = ["0.0.0.0/0"]
 
-  }
+#   }
 
-  egress {
+#   egress {
 
-    from_port = 0
+#     from_port = 0
 
-    to_port = 0
+#     to_port = 0
 
-    protocol = "-1"
+#     protocol = "-1"
 
-    cidr_blocks = ["0.0.0.0/0"]
+#     cidr_blocks = ["0.0.0.0/0"]
 
-  }
-}
+#   }
+# }
 
-resource "aws_security_group" "application_sg" {
-name = "application-sg"
-vpc_id = aws_vpc.main.id
+# resource "aws_security_group" "application_sg" {
+# name = "application-sg"
+# vpc_id = aws_vpc.main.id
 
-ingress {
- from_port = 8080
- to_port = 8080
- protocol = "tcp"
- security_groups = [
-  aws_security_group.alb_sg.id
- ]
+# ingress {
+#  from_port = 8080
+#  to_port = 8080
+#  protocol = "tcp"
+#  security_groups = [
+#   aws_security_group.alb_sg.id
+#  ]
 
-}
+# }
 
-ingress {
+# ingress {
 
-    from_port = 22
+#     from_port = 22
 
-    to_port = 22
+#     to_port = 22
 
-    protocol = "tcp"
+#     protocol = "tcp"
 
-    security_groups = [
+#     security_groups = [
 
-      aws_security_group.bastion_sg.id
+#       aws_security_group.bastion_sg.id
 
-    ]
-}
+#     ]
+# }
   
- egress {
+#  egress {
 
-    from_port = 0
+#     from_port = 0
 
-    to_port = 0
+#     to_port = 0
 
-    protocol = "-1"
+#     protocol = "-1"
 
-    cidr_blocks = [
+#     cidr_blocks = [
 
-      "0.0.0.0/0"
+#       "0.0.0.0/0"
 
-    ]
+#     ]
 
-  }
-
-
-}
-
-data "aws_key_pair" "existing_key" {
-  key_name = "aws-ec2"
-}
-
-data "aws_ami" "ubuntu-aws" {
-  most_recent = true
-  owners = ["099720109477"]
-
-  filter {
-    name = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
-  }
-}
+#   }
 
 
-resource "aws_iam_role" "ec2_role" {
-  name = "production-ec2-role"
+# }
 
-  assume_role_policy = jsonencode({
-Version = "2012-10-17"
-Statement = [
-{
-  Effect = "allow"
+# data "aws_key_pair" "existing_key" {
+#   key_name = "aws-ec2"
+# }
 
-  Principal = {
-      Service = "ec2.amazonaws.com"
-  }
+# data "aws_ami" "ubuntu-aws" {
+#   most_recent = true
+#   owners = ["099720109477"]
 
-      Action = "sts:AssumeRole"
-}
-]
-  })
-}
+#   filter {
+#     name = "name"
+#     values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+#   }
+# }
 
-resource "aws_iam_role_policy_attachment" "ssm" {
-  role = aws_iam_role.ec2_role.name
-policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 
-} 
+# resource "aws_iam_role" "ec2_role" {
+#   name = "production-ec2-role"
 
-resource "aws_iam_instance_profile" "profile" {
-  name = "production-profile"
-  role = aws_iam_role.ec2_role.name
-}
+#   assume_role_policy = jsonencode({
+# Version = "2012-10-17"
+# Statement = [
+# {
+#   Effect = "allow"
 
-resource "aws_launch_template" "app-lt" {
+#   Principal = {
+#       Service = "ec2.amazonaws.com"
+#   }
 
-  name_prefix = "production-lt"
-  image_id = data.aws_ami.ubuntu-aws.id
-  instance_type = var.instance_type
-  key_name = data.aws_key_pair.existing_key.key_name
+#       Action = "sts:AssumeRole"
+# }
+# ]
+#   })
+# }
 
-  vpc_security_group_ids = [
-    aws_security_group.application_sg.id
-  ]
+# resource "aws_iam_role_policy_attachment" "ssm" {
+#   role = aws_iam_role.ec2_role.name
+# policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+
+# } 
+
+# resource "aws_iam_instance_profile" "profile" {
+#   name = "production-profile"
+#   role = aws_iam_role.ec2_role.name
+# }
+
+# resource "aws_launch_template" "app-lt" {
+
+#   name_prefix = "production-lt"
+#   image_id = data.aws_ami.ubuntu-aws.id
+#   instance_type = var.instance_type
+#   key_name = data.aws_key_pair.existing_key.key_name
+
+#   vpc_security_group_ids = [
+#     aws_security_group.application_sg.id
+#   ]
   
-  iam_instance_profile {
-    name = aws_iam_instance_profile.profile.name
-  }
+#   iam_instance_profile {
+#     name = aws_iam_instance_profile.profile.name
+#   }
 
-  block_device_mappings {
-     device_name = "/dev/xvda"
-ebs {
-  volume_size = 20
-  volume_type = "gp3"
-  encrypted = true
-}
+#   block_device_mappings {
+#      device_name = "/dev/xvda"
+# ebs {
+#   volume_size = 20
+#   volume_type = "gp3"
+#   encrypted = true
+# }
 
-  }
+#   }
 
-  tag_specifications {
-    resource_type = "instance"
+#   tag_specifications {
+#     resource_type = "instance"
 
-    tags = {
-      Name = "application-server"
-    }
-  }
-}
+#     tags = {
+#       Name = "application-server"
+#     }
+#   }
+# }
 
-resource "aws_autoscaling_group" "app-asg" {
-desired_capacity = var.desired_capacity
-min_size = var.min_capacity
-max_size = var.max_capacity
+# resource "aws_autoscaling_group" "app-asg" {
+# desired_capacity = var.desired_capacity
+# min_size = var.min_capacity
+# max_size = var.max_capacity
 
-vpc_zone_identifier = [ 
-aws_subnet.private_subnet_1.id,
-aws_subnet.private_subnet_2.id
+# vpc_zone_identifier = [ 
+# aws_subnet.private_subnet_1.id,
+# aws_subnet.private_subnet_2.id
 
- ]
+#  ]
 
- launch_template {
-   id = aws_launch_template.app-lt.id 
-   version = "$Latest"
- }
-health_check_type = "EC2"
+#  launch_template {
+#    id = aws_launch_template.app-lt.id 
+#    version = "$Latest"
+#  }
+# health_check_type = "EC2"
 
-  force_delete = true
-tag {
+#   force_delete = true
+# tag {
 
-    key = "Name"
+#     key = "Name"
 
-    value = "Production-ASG"
+#     value = "Production-ASG"
 
-    propagate_at_launch = true
+#     propagate_at_launch = true
 
-  }
+#   }
   
 
-}
+# }
 
-resource "aws_instance" "bastion" {
+# resource "aws_instance" "bastion" {
   
-ami = data.aws_ami.ubuntu-aws.id
-instance_type = var.bastion_instance_type
-subnet_id = aws_subnet.public_subnet_1.id
-vpc_security_group_ids = [
-  aws_security_group.bastion_sg.id
-]
- associate_public_ip_address = true
- key_name = data.aws_key_pair.existing_key.key_name
+# ami = data.aws_ami.ubuntu-aws.id
+# instance_type = var.bastion_instance_type
+# subnet_id = aws_subnet.public_subnet_1.id
+# vpc_security_group_ids = [
+#   aws_security_group.bastion_sg.id
+# ]
+#  associate_public_ip_address = true
+#  key_name = data.aws_key_pair.existing_key.key_name
 
-   tags = {
+#    tags = {
 
-    Name = "Bastion-Host"
+#     Name = "Bastion-Host"
 
-  }
-}
-
-
-resource "aws_lb" "app_alb" {
-  name = "production-lb"
-  internal = false
-  load_balancer_type = "application"
-
-  security_groups = [ 
- aws_security_group.alb_sg.id
-  ]
-
-  subnets = [
-    aws_subnet.public_subnet_1.id,
-    aws_subnet.public_subnet_2.id
-  ]
-
-  enable_deletion_protection = false
+#   }
+# }
 
 
-   tags = {
-    Name = "Production-ALB"
-  }
-}
+# resource "aws_lb" "app_alb" {
+#   name = "production-lb"
+#   internal = false
+#   load_balancer_type = "application"
 
-resource "aws_lb_target_group" "app-tg" {
-name ="production-target-group"
+#   security_groups = [ 
+#  aws_security_group.alb_sg.id
+#   ]
 
-port = 8080
-protocol = "HTTP"
-vpc_id = aws_vpc.main.id
+#   subnets = [
+#     aws_subnet.public_subnet_1.id,
+#     aws_subnet.public_subnet_2.id
+#   ]
 
-target_type = "instance"
+#   enable_deletion_protection = false
 
-health_check {
-  enabled = true
-  path = "/"
-  protocol = "HTTP"
-  matcher = "200"
-}
-}
 
-resource "aws_alb_listener" "http" {
+#    tags = {
+#     Name = "Production-ALB"
+#   }
+# }
 
-load_balancer_arn = aws_lb.app_alb.arn
-  port = 80
-  protocol = "HTTP"
-  default_action {
-    type = "forward"
+# resource "aws_lb_target_group" "app-tg" {
+# name ="production-target-group"
 
-    target_group_arn = aws_lb_target_group.app-tg.arn
-  }
+# port = 8080
+# protocol = "HTTP"
+# vpc_id = aws_vpc.main.id
+
+# target_type = "instance"
+
+# health_check {
+#   enabled = true
+#   path = "/"
+#   protocol = "HTTP"
+#   matcher = "200"
+# }
+# }
+
+# resource "aws_alb_listener" "http" {
+
+# load_balancer_arn = aws_lb.app_alb.arn
+#   port = 80
+#   protocol = "HTTP"
+#   default_action {
+#     type = "forward"
+
+#     target_group_arn = aws_lb_target_group.app-tg.arn
+#   }
   
-}
+# }
 
-resource "aws_autoscaling_attachment" "asg_attachment" {
-  autoscaling_group_name = aws_autoscaling_group.app-asg.id
-  lb_target_group_arn = aws_lb_target_group.app-tg.arn
-}
+# resource "aws_autoscaling_attachment" "asg_attachment" {
+#   autoscaling_group_name = aws_autoscaling_group.app-asg.id
+#   lb_target_group_arn = aws_lb_target_group.app-tg.arn
+# }
 
