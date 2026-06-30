@@ -67,30 +67,30 @@
 
 # COST OPTIMIZATION BY TRIGGERING LAMDA FUNCTION USING EVENT DRIVEN SCHEDULE(CLOUD WATCH)
 
-variable "aws_region" {
+# variable "aws_region" {
 
-    description = "creating a region in provider aws"
-  type = string
-}
+#     description = "creating a region in provider aws"
+#   type = string
+# }
 
-variable "lambda_function_name" {
-  description = "lambda function name"
-  type = string
-}
+# variable "lambda_function_name" {
+#   description = "lambda function name"
+#   type = string
+# }
 
-variable "schedule_expression" {
-  description = "Event bridge schedule"
-  type = string
-}
+# variable "schedule_expression" {
+#   description = "Event bridge schedule"
+#   type = string
+# }
 
-variable "lambda_timeout" {
+# variable "lambda_timeout" {
 
-  type = number
+#   type = number
 
-}
+# }
 
-variable "lambda_memory" {
+# variable "lambda_memory" {
 
-  type = number
+#   type = number
 
-}
+# }

@@ -105,32 +105,32 @@
 
 # COST OPTIMIZATION BY TRIGGERING LAMDA FUNCTION USING EVENT DRIVEN SCHEDULE(CLOUD WATCH)
 
-output "lambda_function_name" {
-  description = "Lambda Function Name"
+# output "lambda_function_name" {
+#   description = "Lambda Function Name"
 
-  value = aws_lambda_function.snapshot_cleanup.function_name
-}
+#   value = aws_lambda_function.snapshot_cleanup.function_name
+# }
 
-output "lambda_function_arn" {
-  description = "Lambda ARN"
+# output "lambda_function_arn" {
+#   description = "Lambda ARN"
 
-  value = aws_lambda_function.snapshot_cleanup.arn
-}
+#   value = aws_lambda_function.snapshot_cleanup.arn
+# }
 
-output "eventbridge_rule_name" {
-  description = "EventBridge Rule"
+# output "eventbridge_rule_name" {
+#   description = "EventBridge Rule"
 
-  value = aws_cloudwatch_event_rule.snapshot_cleanup_rule.name
-}
+#   value = aws_cloudwatch_event_rule.snapshot_cleanup_rule.name
+# }
 
-output "iam_role_name" {
-  description = "IAM Role"
+# output "iam_role_name" {
+#   description = "IAM Role"
 
-  value = aws_iam_role.lambda_role.name
-}
+#   value = aws_iam_role.lambda_role.name
+# }
 
-output "iam_policy_name" {
-  description = "IAM Policy"
+# output "iam_policy_name" {
+#   description = "IAM Policy"
 
-  value = aws_iam_policy.lambda_policy.name
-}
+#   value = aws_iam_policy.lambda_policy.name
+# }
