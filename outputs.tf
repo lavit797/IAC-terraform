@@ -103,6 +103,8 @@
 #   value = aws_lb_target_group.app-tg.arn
 # }
 
+# COST OPTIMIZATION BY TRIGGERING LAMDA FUNCTION USING EVENT DRIVEN SCHEDULE(CLOUD WATCH)
+
 output "lambda_function_name" {
   description = "Lambda Function Name"
 

@@ -1,3 +1,5 @@
+# COST OPTIMIZATION BY TRIGGERING LAMDA FUNCTION USING EVENT DRIVEN SCHEDULE(CLOUD WATCH)
+
 resource "aws_cloudwatch_event_rule" "snapshot_cleanup_rule" {
   name = "snapshot-cleanup-rule"
   description = "runs lambda every 5 min to delete stale snapshot"

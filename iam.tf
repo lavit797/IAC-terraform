@@ -1,3 +1,5 @@
+# COST OPTIMIZATION BY TRIGGERING LAMDA FUNCTION USING EVENT DRIVEN SCHEDULE(CLOUD WATCH)
+
 resource "aws_iam_role" "lambda_role" {
   name = "lambda-snapshot-cleanup-role"
   assume_role_policy = jsonencode(

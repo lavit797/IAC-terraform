@@ -1,3 +1,5 @@
+# COST OPTIMIZATION BY TRIGGERING LAMDA FUNCTION USING EVENT DRIVEN SCHEDULE(CLOUD WATCH)
+
 import boto3
 
 def lambda_handler(event, context):

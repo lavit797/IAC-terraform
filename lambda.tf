@@ -1,3 +1,5 @@
+# COST OPTIMIZATION BY TRIGGERING LAMDA FUNCTION USING EVENT DRIVEN SCHEDULE(CLOUD WATCH)
+
 data "archive_file" "lambda_zip" {
   type = "zip"
   source_file = "${path.module}/lambda/lambda_function.py"
